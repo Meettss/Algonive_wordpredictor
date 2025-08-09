@@ -30,7 +30,7 @@ Algonive/
 ```
 
 **Clone the repository**
-   ``` bash
+   bash
    git clone https://github.com/Meettss/Algonive.git
    cd Algonive
 
