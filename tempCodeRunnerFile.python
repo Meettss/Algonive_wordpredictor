@@ -1,0 +1,43 @@
+import time
+from rapidfuzz import fuzz, process
+import nltk
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
+
+# Download NLTK resources (only first run)
+nltk.download('punkt')
+nltk.download('stopwords')
+
+# Predefined FAQ responses
+faq_responses = {
+    "what is an ai customer support chatbot": "An AI chatbot simulates human conversation to assist users with queries in real-time.",
+    "what industries use customer support chatbots": "E-commerce, banking, healthcare, telecom, and travel are some industries that use AI chatbots.",
+    "what is the main purpose of this chatbot": "To assist users with queries, automate responses, and improve customer engagement."
+}
+
+stop_words = set(stopwords.words('english'))
+
+def preprocess_text(text):
+    """Tokenizes text and removes stopwords for better matching."""
+    tokens = word_tokenize(text.lower())
+    filtered_tokens = [word for word in tokens if word.isalnum() and word not in stop_words]
+    return " ".join(filtered_tokens)
+
+def find_best_match(user_input):
+    """Finds the closest FAQ match using fuzzy string matching."""
+    processed_input = preprocess_text(user_input)
+    best_match, score, _ = process.extractOne(processed_input, faq_responses.keys(), scorer=fuzz.token_sort_ratio)
+    if score > 60:  # match threshold
+        return faq_responses[best_match]
+    else:
+        return "I'm sorry, I don't have an answer for that yet."
+
+# Chat loop
+print("🤖 AI Support Bot: Hello! Ask me something (type 'exit' to quit).")
+while True:
+    user_query = input("You: ")
+    if user_query.lower() in ['exit', 'quit']:
+        print("🤖 AI Support Bot: Goodbye! 👋")
+        break
+    response = find_best_match(user_query)
+    print(f"🤖 AI Support Bot: {response}")
